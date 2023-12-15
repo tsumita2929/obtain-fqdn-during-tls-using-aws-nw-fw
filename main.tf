@@ -360,7 +360,7 @@ resource "aws_networkfirewall_logging_configuration" "main" {
 
 #trivy:ignore:AVD-AWS-0017 Log group is not encrypted.
 resource "aws_cloudwatch_log_group" "netfw_log" {
-  name              = "/aws/network-firewall/tls-test"
+  name              = "/aws/network-firewall/poc"
   retention_in_days = 30
 }
 
@@ -368,10 +368,10 @@ resource "aws_cloudwatch_log_group" "netfw_log" {
 #trivy:ignore:AVD-AWS-0089 S3 Bucket does not have logging enabled.
 #trivy:ignore:AVD-AWS-0090 Bucket does not have versioning enabled.
 resource "aws_s3_bucket" "netfw_log" {
-  bucket = "aws-netfw-logs-poc-tmt"
+  bucket = "aws-netfw-logs-poc-nw-fw-${data.aws_caller_identity.current.account_id}"
 
   tags = {
-    Name = "aws-netfw-logs-poc-tmt"
+    Name = "aws-netfw-logs-poc-nw-fw-${data.aws_caller_identity.current.account_id}"
   }
 }
 
@@ -426,7 +426,7 @@ resource "aws_s3_bucket_policy" "netfw_log" {
           "Service" : "delivery.logs.amazonaws.com"
         },
         "Action" : "s3:GetBucketAcl",
-        "Resource" : "arn:aws:s3:::aws-netfw-logs-poc-tmt",
+        "Resource" : "arn:aws:s3:::aws-netfw-logs-poc-nw-fw-${data.aws_caller_identity.current.account_id}",
         "Condition" : {
           "StringEquals" : {
             "aws:SourceAccount" : data.aws_caller_identity.current.account_id
